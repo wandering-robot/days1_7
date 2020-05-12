@@ -1,7 +1,8 @@
 import pygame as py
 from world import World
 from god import God
-from creature import Red, Blue
+from creature import Red, Blue, Green
+from conciousness import Conciousness
 
 class MainDisplay:
     def __init__(self):
@@ -14,8 +15,10 @@ class MainDisplay:
 
         self.display_window = py.display.set_mode(self.size)
         self.background = py.Surface(self.display_window.get_size()).convert()
-        self.world = World()
+        self.world = World(self.size)
         self.god = God(self.world)
+        self.conciousness = Conciousness()
+        self.conciousness.world = self.world
         self.default = {}           #will use this later to generate a specific population
 
     @staticmethod
@@ -52,19 +55,18 @@ class MainDisplay:
             else:
                 self.god.holy_spirit(event.pos)
         elif event.type == py.KEYDOWN:      #keyboard events
-            self.god.control_avatar(event.key)
-        for key in self.move_keys:          #allow for held keys
-            if py.key.get_pressed()[key]:
-                self.god.control_avatar(key)
-
-
+            self.god.control_avatar(event.key,True)
+        elif event.type == py.KEYUP:
+            self.god.control_avatar(event.key,False)
 
     def run(self):
         self.clock.tick(self.fps)
         while True:
-            for event in py.event.get():
-                self.handle_event(event)
-            self.update_objects()
+            for event in py.event.get():    #get input from god
+                self.handle_event(event)    
+            self.conciousness.percieve()    #get input from creations
+            self.world.live()               #have creations do their thing based on what they want
+            self.update_objects()           #redraw creation's positions
 
 if __name__ == '__main__':
     sim = MainDisplay()

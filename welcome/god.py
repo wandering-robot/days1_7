@@ -4,11 +4,13 @@ class God:
         self.world = world
         self.avatar = None
         self.speed = 5
+        self.moving = [0,0,0,0]     #boolean up/down/left/right, not used yet
     
     def auto_spawn(self,**kwargs):   #use a dictionary to determine starting numbers
         pass
 
     def single_spawn(self,creature):
+        creature.world = self.world
         self.world.life_list.append(creature)
 
     def holy_spirit(self, pos):
@@ -22,14 +24,18 @@ class God:
         if whitespace == True:
             self.avatar = None
 
-    def control_avatar(self,key,stop=True):
+    def control_avatar(self,key,moving):
         if self.avatar != None:
             if key == py.K_e:
+                self.moving[0] = moving
                 self.avatar.moveup(self.speed)
             elif key == py.K_d:
+                self.moving[1] = moving
                 self.avatar.movedown(self.speed)
             elif key == py.K_f:
+                self.moving[3] = moving
                 self.avatar.moveright(self.speed)
             elif key == py.K_s:
+                self.moving[2] = moving
                 self.avatar.moveleft(self.speed)
 
