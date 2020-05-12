@@ -3,7 +3,7 @@ class God:
     def __init__(self,world):
         self.world = world
         self.avatar = None
-        self.speed = 5
+        self.speed = 25
         self.moving = [0,0,0,0]     #boolean up/down/left/right, not used yet
     
     def auto_spawn(self,**kwargs):   #use a dictionary to determine starting numbers

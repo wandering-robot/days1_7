@@ -17,10 +17,10 @@ class Conciousness:
             dist = 0
             for creature_seen in self.world.life_list:       #oof O(n2)
                 dist = ((creature_looking.pos[0]-creature_seen.pos[0])**2 + (creature_looking.pos[1]-creature_seen.pos[1])**2)**(0.5)
-                if closest_dist == None and dist > 0:
-                    closest_creature, closest_dist = creature_seen, dist
-                elif dist < creature_looking.percieve_dist and dist > 0:
-                    if dist < closest_dist:
+                if dist < creature_looking.percieve_dist and dist != 0:
+                    if closest_dist == None:
+                        closest_creature, closest_dist = creature_seen, dist
+                    elif dist < closest_dist:
                         closest_creature, closest_dist = creature_seen, dist
             if closest_creature != None:
                 if closest_creature.__class__ == creature_looking.eat_me:

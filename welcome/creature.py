@@ -14,15 +14,16 @@ class Creature(Conciousness):
         self.speed = None
 
     def move(self):
-        if self.want_to_go[0]:
-            self.moveup(self.speed)
-        elif self.want_to_go[1]:
-            self.movedown(self.speed)
-        if self.want_to_go[2]:
-            self.moveleft(self.speed)
-        elif self.want_to_go[3]:
-            self.moveright(self.speed)
-        self.want_to_go = [0,0,0,0]
+        if not(self.holy):
+            if self.want_to_go[0]:
+                self.moveup(self.speed)
+            elif self.want_to_go[1]:
+                self.movedown(self.speed)
+            if self.want_to_go[2]:
+                self.moveleft(self.speed)
+            elif self.want_to_go[3]:
+                self.moveright(self.speed)
+            self.want_to_go = [0,0,0,0]
 
     def moveup(self,speed):
         if (self.pos[1] - speed) >= (0 + self.size[1]/2):
@@ -46,7 +47,7 @@ class Red(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]
 
         self.speed = 1
-        self.percieve_dist = 30
+        self.percieve_dist = 40
         self.i_eat = Blue
 
 class Blue(Creature):
