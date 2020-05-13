@@ -1,3 +1,4 @@
+from random import randint
 import pygame as py
 from conciousness import Conciousness
 
@@ -13,17 +14,37 @@ class Creature(Conciousness):
         self.pos = None             #subclasses will update
         self.speed = None
 
+        self.focus = None
+        self.active = 0                 #active describes the creatures ability to remember that it was trying to do something, and will do that thing for permeance ammount of turns
+        self.object_permeance = None
+
+    def eat(self,other):
+        self.world.death(other)
+
     def move(self):
         if not(self.holy):
-            if self.want_to_go[0]:
-                self.moveup(self.speed)
-            elif self.want_to_go[1]:
-                self.movedown(self.speed)
-            if self.want_to_go[2]:
-                self.moveleft(self.speed)
-            elif self.want_to_go[3]:
-                self.moveright(self.speed)
-            self.want_to_go = [0,0,0,0]
+            if self.focus != None:
+                self.decide2move()
+            else:
+                self.aimless_move()
+
+    def aimless_move(self):
+        i = randint(0,5)
+        if i == 0:
+            n = randint(0,3)
+            self.want_to_go[n] = True
+            self.decide2move()
+
+    def decide2move(self):
+        if self.want_to_go[0]:
+            self.moveup(self.speed)
+        elif self.want_to_go[1]:
+            self.movedown(self.speed)
+        if self.want_to_go[2]:
+            self.moveleft(self.speed)
+        elif self.want_to_go[3]:
+            self.moveright(self.speed)
+        self.want_to_go = [0,0,0,0]
 
     def moveup(self,speed):
         if (self.pos[1] - speed) >= (0 + self.size[1]/2):
@@ -47,8 +68,10 @@ class Red(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]
 
         self.speed = 1
-        self.percieve_dist = 40
+        self.percieve_dist = 70
         self.i_eat = Blue
+
+        self.object_permeance = 5
 
 class Blue(Creature):
     def __init__(self,pos):
@@ -59,9 +82,11 @@ class Blue(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
 
         self.speed = 2
-        self.percieve_dist = 30
+        self.percieve_dist = 50
         self.i_eat = Green
         self.eat_me = Red
+
+        self.object_permeance = 10
 
 class Green(Creature):
     def __init__(self,pos):

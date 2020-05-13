@@ -19,7 +19,7 @@ class MainDisplay:
         self.god = God(self.world)
         self.conciousness = Conciousness()
         self.conciousness.world = self.world
-        self.default = {}           #will use this later to generate a specific population
+        self.default = {'r':5,'b':5}           #will use this later to generate a specific population
 
     @staticmethod
     def get_screen_size():
@@ -55,6 +55,8 @@ class MainDisplay:
             else:
                 self.god.holy_spirit(event.pos)
         elif event.type == py.KEYDOWN:      #keyboard events
+            if event.key == py.K_SPACE:
+                self.god.auto_spawn(**self.default)
             self.god.control_avatar(event.key,True)
         elif event.type == py.KEYUP:
             self.god.control_avatar(event.key,False)

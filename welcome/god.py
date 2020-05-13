@@ -1,4 +1,6 @@
+from random import randint
 import pygame as py
+from creature import Red, Blue, Green
 class God:
     def __init__(self,world):
         self.world = world
@@ -7,7 +9,11 @@ class God:
         self.moving = [0,0,0,0]     #boolean up/down/left/right, not used yet
     
     def auto_spawn(self,**kwargs):   #use a dictionary to determine starting numbers
-        pass
+        for colour,num in kwargs.items():
+            colour = self.colour_converter(colour)
+            for _ in range(num):
+                pos = (randint(20,self.world.size[0]-20),randint(20,self.world.size[1]-20))
+                self.single_spawn(colour(pos))           
 
     def single_spawn(self,creature):
         creature.world = self.world
@@ -38,4 +44,11 @@ class God:
             elif key == py.K_s:
                 self.moving[2] = moving
                 self.avatar.moveleft(self.speed)
+
+    @staticmethod
+    def colour_converter(s):
+        if s == 'r':
+            return Red
+        elif s == 'b':
+            return Blue
 

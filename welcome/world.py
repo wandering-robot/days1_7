@@ -10,3 +10,6 @@ class World:
             # creature.try_to_eat
             # creature.try_to_breed
 
+    def death(self,other):
+        if other in self.life_list:
+            self.life_list.remove(other)
