@@ -12,6 +12,9 @@ class Conciousness:
 
     def percieve(self):
         for creature_looking in self.world.life_list:
+            if not creature_looking.moves:
+                continue
+            #checks if creature already has a focus
             if creature_looking.focus != None:
                 creature_looking.active += 1
                 self.decide(creature_looking,creature_looking.focus)
@@ -21,6 +24,7 @@ class Conciousness:
                 if creature_looking.active >= creature_looking.object_permeance:
                     creature_looking.focus = None
                 continue
+            #Otherwise see if creature is close enough to percieve a new focus
             closest_creature = None
             closest_dist = None
             dist = 0
@@ -43,7 +47,7 @@ class Conciousness:
         creature_looking.focus = closest_creature 
         if closest_creature.__class__ == creature_looking.eat_me:
             self.run_from_pred(creature_looking, closest_creature)
-        else:
+        elif closest_creature.__class__ == creature_looking.i_eat:
             self.run_to_food(creature_looking, closest_creature)
 
     def run_from_pred(self, creature,other):

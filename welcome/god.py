@@ -51,4 +51,6 @@ class God:
             return Red
         elif s == 'b':
             return Blue
+        elif s =='g':
+            return Green
 

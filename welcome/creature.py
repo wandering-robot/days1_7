@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, shuffle
 import pygame as py
 from conciousness import Conciousness
 
@@ -13,16 +13,25 @@ class Creature(Conciousness):
         self.holy = False          #by possesing them, will become holy=True
         self.pos = None             #subclasses will update
         self.speed = None
+        self.moves = True
 
         self.focus = None
         self.active = 0                 #active describes the creatures ability to remember that it was trying to do something, and will do that thing for permeance ammount of turns
         self.object_permeance = None
 
+        self.hunger = 0
+        self.starve_level = None
+
+        self.horny = 0
+        self.breed_level = None
+
     def eat(self,other):
-        self.world.death(other)
+        if self.hunger/self.starve_level >0.1:      #so they feel satisfied for a bit
+            self.world.death(other)
+            self.hunger = 0
 
     def move(self):
-        if not(self.holy):
+        if not(self.holy) and self.moves:
             if self.focus != None:
                 self.decide2move()
             else:
@@ -72,6 +81,11 @@ class Red(Creature):
         self.i_eat = Blue
 
         self.object_permeance = 5
+        self.starve_level = 20000
+        self.breed_level = 10000
+
+    def breed(self):
+        return Red(self.pos)
 
 class Blue(Creature):
     def __init__(self,pos):
@@ -87,6 +101,11 @@ class Blue(Creature):
         self.eat_me = Red
 
         self.object_permeance = 10
+        self.starve_level = 30000
+        self.breed_level = 10000
+
+    def breed(self):
+        return Blue(self.pos)
 
 class Green(Creature):
     def __init__(self,pos):
@@ -95,8 +114,22 @@ class Green(Creature):
         self.image.fill(self.colour)
         w,h = pos
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
+        self.patch = []
 
         self.eat_me = Blue  #this might be redundant
+        self.moves = False
+
+        self.starve_level = 100000
+        self.breed_level = 8000
+
+    def breed(self):
+        dir = range(-1,2)
+        shuffle(dir)
+        for d1 in dir:
+            for d2 in dir:
+                pass
+
+
 
 if __name__ == '__main__':
     b =  Blue((12,12))
