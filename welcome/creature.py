@@ -20,11 +20,18 @@ class Creature(Conciousness):
         self.active = 0                 #active describes the creatures ability to remember that it was trying to do something, and will do that thing for permeance ammount of turns
         self.object_permeance = None
 
+        self.eat_me = None
+        self.i_eat = None
+
         self.hunger = 0
         self.starve_level = None
 
         self.horny = 0
         self.breed_level = None
+
+    def is_starving(self):
+        if self.hunger/self.starve_level > 0.8:
+            return True
 
     def eat(self,other):
         if self.hunger/self.starve_level >0.1:      #so they feel satisfied for a bit
@@ -122,8 +129,10 @@ class Green(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
         self.patch.add(tuple(self.pos))
 
+        self.object_permeance = 5
+        self.speed = 10
+        self.percieve_dist = 2*self.size[0]
         self.eat_me = Blue  #this might be redundant
-        self.moves = False
 
         self.starve_level = 100000
         self.breed_level = 2000

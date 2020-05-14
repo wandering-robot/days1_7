@@ -46,6 +46,8 @@ class Conciousness:
                     self.run_from_pred(creature_looking,closest_creature)       #activates to keep same species from overlapping on top of eachother
                 else:
                     self.decide(creature_looking,closest_creature)
+            if creature_looking.i_eat == None:
+                creature_looking.moves = False
 
     def decide(self,creature_looking,closest_creature):
         creature_looking.focus = closest_creature 
