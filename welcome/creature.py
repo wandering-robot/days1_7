@@ -14,6 +14,7 @@ class Creature(Conciousness):
         self.pos = None             #subclasses will update
         self.speed = None
         self.moves = True
+        self.momentum = False
 
         self.focus = None
         self.active = 0                 #active describes the creatures ability to remember that it was trying to do something, and will do that thing for permeance ammount of turns
@@ -38,10 +39,14 @@ class Creature(Conciousness):
                 self.aimless_move()
 
     def aimless_move(self):
-        i = randint(0,5)
+        i = randint(0,20)
         if i == 0:
             n = randint(0,3)
             self.want_to_go[n] = True
+            self.momentum = self.want_to_go
+            self.decide2move()
+        elif i >= 18 and self.momentum != False:
+            self.want_to_go = self.momentum
             self.decide2move()
 
     def decide2move(self):
@@ -81,8 +86,8 @@ class Red(Creature):
         self.i_eat = Blue
 
         self.object_permeance = 5
-        self.starve_level = 20000
-        self.breed_level = 10000
+        self.starve_level = 12000
+        self.breed_level = 13000
 
     def breed(self):
         return Red(self.pos)
@@ -101,33 +106,38 @@ class Blue(Creature):
         self.eat_me = Red
 
         self.object_permeance = 10
-        self.starve_level = 30000
-        self.breed_level = 10000
+        self.starve_level = 5000
+        self.breed_level = 5000
 
     def breed(self):
         return Blue(self.pos)
 
 class Green(Creature):
+    patch = set()
     def __init__(self,pos):
         super().__init__()
         self.colour = (0,255,0)
         self.image.fill(self.colour)
         w,h = pos
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
-        self.patch = []
+        self.patch.add(tuple(self.pos))
 
         self.eat_me = Blue  #this might be redundant
         self.moves = False
 
         self.starve_level = 100000
-        self.breed_level = 8000
+        self.breed_level = 2000
 
     def breed(self):
-        dir = range(-1,2)
+        dir = list(range(-1,2))
         shuffle(dir)
-        for d1 in dir:
-            for d2 in dir:
-                pass
+        if dir[0] == 0:
+            for d1 in dir:
+                for d2 in dir:
+                    pos = (self.pos[0]+d1*self.size[0],self.pos[1]+d2*self.size[1])
+                    if pos not in self.patch:
+                        return Green(pos)
+                
 
 
 

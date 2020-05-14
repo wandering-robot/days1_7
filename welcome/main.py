@@ -19,7 +19,7 @@ class MainDisplay:
         self.god = God(self.world)
         self.conciousness = Conciousness()
         self.conciousness.world = self.world
-        self.default = {'r':5,'b':5,'g':10}           #will use this later to generate a specific population
+        self.default = {'r':5,'b':5,'g':40}           #will use this later to generate a specific population
 
     @staticmethod
     def get_screen_size():
