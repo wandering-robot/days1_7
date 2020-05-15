@@ -11,19 +11,17 @@ class Conciousness:
         self.percieve_dist = None
 
     def percieve(self):
-        for creature_looking in self.world.life_list:
+        for creature_looking in self.world.life_list:   #will iterate through all creatures
             if not creature_looking.moves:
                 continue
             #checks if creature already has a focus
             if creature_looking.focus != None:
-                creature_looking.active += 1
-                self.decide(creature_looking,creature_looking.focus)
-                dist = ((creature_looking.pos[0]-creature_looking.focus.pos[0])**2 + (creature_looking.pos[1]-creature_looking.focus.pos[1])**2)**(0.5)
-                if (dist < (creature_looking.size[0]+creature_looking.size[1])/3) and creature_looking.focus.__class__ == creature_looking.i_eat:     #special average size is the 'eat range'                     
-                    creature_looking.eat(creature_looking.focus)
-                if creature_looking.active >= creature_looking.object_permeance or creature_looking.__class__ == creature_looking.focus.__class__:
-                    creature_looking.focus = None
+                dist = self.dist_between(creature_looking,creature_looking.focus)
+                if not(self.can_see(creature_looking,creature_looking.focus,dist)):
+                    creature_looking.forget_focus()
                     continue
+                self.engage(creature_looking,creature_looking.focus,dist)
+                continue
             #percieve closest creatures
             closest_creature = None
             closest_dist = None
@@ -31,29 +29,57 @@ class Conciousness:
             for creature_seen in self.world.life_list:       #oof O(n2)
                 if creature_looking == creature_seen:
                     continue
-                dist = ((creature_looking.pos[0]-creature_seen.pos[0])**2 + (creature_looking.pos[1]-creature_seen.pos[1])**2)**(0.5)
-                if dist < creature_looking.percieve_dist:
+                if self.can_see(creature_looking,creature_seen):
                     if closest_dist == None:
                         closest_creature, closest_dist = creature_seen, dist
                     elif dist < closest_dist:
                         closest_creature, closest_dist = creature_seen, dist
             if closest_creature != None:
-                if (dist < (creature_looking.size[0]+creature_looking.size[1])/3) and closest_creature.__class__ == creature_looking.i_eat:     #special average size is the 'eat range'                     
-                    creature_looking.eat(closest_creature)
-                    creature_looking.horny += creature_looking.breed_level * 0.2
-                elif (dist < (creature_looking.size[0]+creature_looking.size[1])/2) and closest_creature.__class__ == creature_looking.__class__:
-                    creature_looking.focus = closest_creature
-                    self.run_from_pred(creature_looking,closest_creature)       #activates to keep same species from overlapping on top of eachother
-                else:
-                    self.decide(creature_looking,closest_creature)
-            if creature_looking.i_eat == None:
+                self.engage(creature_looking,closest_creature,dist)
+            if creature_looking.i_eat == None:      #spreads plants out for their first move, then makes them dormant
                 creature_looking.moves = False
 
-    def decide(self,creature_looking,closest_creature):
-        creature_looking.focus = closest_creature 
+    def can_see(self,looking,seen,dist=None):
+        if dist == None:
+            dist = self.dist_between(looking,seen)
+        return dist < looking.percieve_dist
+
+    @staticmethod
+    def same_class(creature1,creature2):
+        return creature1.__class__ == creature2.__class__
+    
+    @staticmethod
+    def dist_between(creature1,creature2):
+        return ((creature1.pos[0]-creature2.pos[0])**2 + (creature1.pos[1]-creature2.pos[1])**2)**(0.5)
+
+    def avoid_family(self,looking,seen,dist=None):
+        if dist == None:
+            dist = self.dist_between(looking,seen)
+        if (dist < (looking.size[0]+looking.size[1])/2) and seen.__class__ == looking.__class__:
+            self.run_from_pred(looking,seen)       #activates to keep same species from overlapping on top of eachother
+            return True
+        return False
+
+    def engage(self,looking,seen,dist=None):
+        if dist == None:
+            dist = self.dist_between(looking,seen)
+        if not(self.avoid_family(looking,seen,dist)):
+            if not(self.try2eat(looking,seen,dist)):
+                self.decide(looking,seen)
+
+    def try2eat(self,looking,seen,dist=None):
+        if dist == None:
+            dist = self.dist_between(looking,seen)
+        if (dist < (looking.size[0]+looking.size[1])*2/3) and seen.__class__ == looking.i_eat:     #special average size is the 'eat range'                     
+            looking.eat(seen)
+            return True
+        return False
+
+    def decide(self,creature_looking,closest_creature): 
         if closest_creature.__class__ == creature_looking.eat_me or closest_creature.__class__ == creature_looking.__class__:
             self.run_from_pred(creature_looking, closest_creature)
         elif closest_creature.__class__ == creature_looking.i_eat:
+            creature_looking.focus = closest_creature
             self.run_to_food(creature_looking, closest_creature)
 
     def run_from_pred(self, creature,other):

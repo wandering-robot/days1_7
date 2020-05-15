@@ -17,8 +17,6 @@ class Creature(Conciousness):
         self.momentum = False
 
         self.focus = None
-        self.active = 0                 #active describes the creatures ability to remember that it was trying to do something, and will do that thing for permeance ammount of turns
-        self.object_permeance = None
 
         self.eat_me = None
         self.i_eat = None
@@ -29,14 +27,27 @@ class Creature(Conciousness):
         self.horny = 0
         self.breed_level = None
 
+    def die(self):
+        self.colour = (51,17,0)
+        self.image.fill(self.colour) 
+        self.moves = False
+        self.dead4 = 0
+
+    def forget_focus(self):
+        self.focus = None
+
     def is_starving(self):
         if self.hunger/self.starve_level > 0.8:
             return True
 
     def eat(self,other):
-        if self.hunger/self.starve_level >0.1:      #so they feel satisfied for a bit
+        if self.hunger/self.starve_level >= 0.1:      #so they feel satisfied for a bit
             self.world.death(other)
+            self.focus = None
             self.hunger = 0
+            self.horny += self.breed_level * 0.2      #reward for eating
+        else:
+            self.focus = other
 
     def move(self):
         if not(self.holy) and self.moves:
@@ -89,11 +100,10 @@ class Red(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]
 
         self.speed = 1
-        self.percieve_dist = 70
+        self.percieve_dist = 50
         self.i_eat = Blue
 
-        self.object_permeance = 5
-        self.starve_level = 12000
+        self.starve_level = 7000
         self.breed_level = 13000
 
     def breed(self):
@@ -107,14 +117,13 @@ class Blue(Creature):
         w,h = pos
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
 
-        self.speed = 2
-        self.percieve_dist = 50
+        self.speed = 4
+        self.percieve_dist = 35
         self.i_eat = Green
         self.eat_me = Red
 
-        self.object_permeance = 10
         self.starve_level = 5000
-        self.breed_level = 5000
+        self.breed_level = 5001
 
     def breed(self):
         return Blue(self.pos)
@@ -129,7 +138,6 @@ class Green(Creature):
         self.pos = [w-self.size[0]/2, h-self.size[1]/2]        
         self.patch.add(tuple(self.pos))
 
-        self.object_permeance = 5
         self.speed = 10
         self.percieve_dist = 2*self.size[0]
         self.eat_me = Blue  #this might be redundant

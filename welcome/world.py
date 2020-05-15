@@ -2,6 +2,7 @@
 class World:
     def __init__(self,size):
         self.life_list = []
+        self.death_list = []
         self.size = size
 
     def live(self):
@@ -9,13 +10,22 @@ class World:
             creature.move()
             creature.hunger += 1
             creature.horny += 1
-            if creature.hunger > creature.starve_level:
-                self.death(creature)
-                print(f'Creature {creature.__class__!r} died of hunger. World now has {len(self.life_list)} creatures')
             if creature.horny > creature.breed_level:
                 self.create(creature)
                 creature.horny = 0
+            if creature.hunger > creature.starve_level:
+                self.death(creature)
+                creature.die()
+                self.death_list.append(creature)
+        for creature in self.death_list:
+            creature.dead4 += 1
+            if creature.dead4 > 500:
+                self.final_death(creature)
 
+    def final_death(self,zombie):
+        if zombie in self.death_list:
+            self.death_list.remove(zombie)      
+                
     def death(self,to_die):
         if to_die in self.life_list:
             self.life_list.remove(to_die)

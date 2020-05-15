@@ -7,6 +7,8 @@ from conciousness import Conciousness
 class MainDisplay:
     def __init__(self):
         
+        self.running = True
+
         self.move_keys = [py.K_e,py.K_s,py.K_d,py.K_f]
 
         self.size = self.get_screen_size()
@@ -19,7 +21,7 @@ class MainDisplay:
         self.god = God(self.world)
         self.conciousness = Conciousness()
         self.conciousness.world = self.world
-        self.default = {'r':5,'b':5,'g':40}           #will use this later to generate a specific population
+        self.default = {'r':5,'b':10,'g':40}           #will use this later to generate a specific population
 
     @staticmethod
     def get_screen_size():
@@ -32,6 +34,16 @@ class MainDisplay:
         # else:
         #     return (1000,500)
 
+    def skip(self):
+        self.fps = self.fps*2
+
+    def set_default(self):
+        nums = input("input desired autospan numbers for r:b:g\t")
+        nums = nums.split(':')
+        self.default['r'] = int(nums[0])
+        self.default['b'] = int(nums[1])
+        self.default['g'] = int(nums[2])
+
     def set_bg_colour(self,colour):
         self.background.fill(colour)
 
@@ -40,6 +52,8 @@ class MainDisplay:
 
     def update_objects(self):
         self.display_window.blit(self.background, (0,0))    #draws background first
+        for creature in self.world.death_list:
+            self.display_window.blit(creature.image,creature.pos)
         for creature in self.world.life_list:
             self.display_window.blit(creature.image, creature.pos)  #then goes through creature list and draws each one
         py.display.flip()
@@ -47,6 +61,7 @@ class MainDisplay:
     def handle_event(self,event):
         if event.type == py.QUIT:       #quit simulation
             py.quit()
+            self.running = False
         elif event.type == py.MOUSEBUTTONDOWN:  #mouseclick events
             if event.button == 1:
                 self.god.single_spawn(Red(event.pos))
@@ -57,18 +72,22 @@ class MainDisplay:
         elif event.type == py.KEYDOWN:      #keyboard events
             if event.key == py.K_SPACE:
                 self.god.auto_spawn(**self.default)
+            elif event.key == py.K_n:
+                self.set_default()
+            elif event.key == py.K_m:
+                self.skip()
             self.god.control_avatar(event.key,True)
         elif event.type == py.KEYUP:
             self.god.control_avatar(event.key,False)
 
     def run(self):
         self.clock.tick(self.fps)
-        while True:
+        while self.running:
+            self.update_objects()           #redraw creation's positions
             for event in py.event.get():    #get input from god
                 self.handle_event(event)    
             self.conciousness.percieve()    #get input from creations
             self.world.live()               #have creations do their thing based on what they want
-            self.update_objects()           #redraw creation's positions
 
 if __name__ == '__main__':
     sim = MainDisplay()
