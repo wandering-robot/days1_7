@@ -156,7 +156,6 @@ class MainDisplay:
     def run(self):
         self.clock.tick(self.fps)
         while self.running:
-            print(self.offset)
             self.update_objects()           #redraw creation's positions
             for event in py.event.get():    #get input from god
                 self.handle_event(event)    
