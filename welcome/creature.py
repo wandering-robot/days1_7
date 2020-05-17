@@ -143,7 +143,7 @@ class Green(Creature):
         self.eat_me = Blue  #this might be redundant
 
         self.starve_level = 100000
-        self.breed_level = 2000
+        self.breed_level = 200000000
 
     def breed(self):
         dir = list(range(-1,2))

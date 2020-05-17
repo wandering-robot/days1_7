@@ -5,6 +5,11 @@ class World:
         self.death_list = []
         self.size = size
 
+    def all_creatures(self):
+        all_creatures =  self.life_list
+        all_creatures.extend(self.death_list)
+        return all_creatures
+
     def live(self):
         for creature in self.life_list:
             creature.move()
@@ -35,3 +40,9 @@ class World:
         if child != None:
             child.world = self
             self.life_list.append(child)
+
+if __name__ == "__main__":
+
+    l1 = (2,2)
+    l2= [3,3]
+    print(type(l1)(l2))
